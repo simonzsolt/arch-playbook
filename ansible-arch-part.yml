@@ -32,13 +32,13 @@
         part_start: 100GiB
         part_end: 104GiB
             
-    - name: Create a new primary partition for fun
+    - name: Create a new primary partition for home
       parted:
         device: /dev/sda
         number: 4
         label: gpt
         state: present
-        part_start: 104Gib
+        part_start: 104GiB
       
     # - name: Clear Drive
     #   register: clear_drive
