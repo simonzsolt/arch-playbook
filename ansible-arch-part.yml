@@ -4,6 +4,18 @@
     device: /dev/sda
   tasks:
 
+    - name: Create a new primary partition
+      parted:
+        device: /dev/sdb
+        number: 1
+        state: present
+
+    - name: Remove partition number 1
+      parted:
+        device: /dev/sdb
+        number: 1
+        state: absent
+
     - name: Create a new primary partition with a size of 1GiB
       parted:
         device: /dev/sdb
@@ -18,6 +30,7 @@
         flags: [ lvm ]
         state: present
         part_start: 1GiB
+
   
     # - name: Clear Drive
     #   register: clear_drive
