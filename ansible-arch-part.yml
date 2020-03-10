@@ -4,14 +4,7 @@
     device: /dev/sda
   tasks:
 
-    # - name: Create a new primary partition
-    #   parted:
-    #     device: /dev/sda
-    #     number: 1
-    #     label: gpt
-    #     state: present
-
-    - name: Create a new primary partition with a size of 1GiB
+    - name: Create a new primary partition for boot
       parted:
         device: /dev/sda
         number: 1
@@ -19,13 +12,13 @@
         state: present
         part_end: 260MiB
 
-    - name: Create a new primary partition for LVM
+    - name: Create a new primary partition for root
       parted:
         device: /dev/sda
         number: 2
+        flags: [ root ]
         state: present
         part_start: 260MiB
-
       
     # - name: Clear Drive
     #   register: clear_drive
