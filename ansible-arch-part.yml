@@ -3,47 +3,62 @@
   vars: 
     device: /dev/sda
   tasks:
-  
-    - name: Clear Drive
-      register: clear_drive
-      filesystem:
-        dev: "{{ device }}" 
-        fstype: ext4
-        force: yes    
-    
-    - debug:
-        msg: Cleat drive":" {{ clear_drive }}    
- 
-    - name: Boot Partition
-      register: boot_part
+
+    - name: Create a new primary partition with a size of 1GiB
       parted:
-        device: "{{ device }}" 
-        flags: [ esp ]
-        label: gpt
-        name: efi
+        device: /dev/sdb
         number: 1
-        part_type: primary
-        part_end: "260MiB"
-        unit: MiB
         state: present
+        part_end: 1GiB
 
-    - debug:
-        msg: Boot partition":" {{ boot_part }}
-
-    - name: Root Partition
-      register: root_part
+    - name: Create a new primary partition for LVM
       parted:
-        device: "{{ device }}" 
-        flags: [ root ]
-        label: gpt
-        name: root
+        device: /dev/sdb
         number: 2
-        part_type: logical
-        part_start: "260MiB"
-        part_end: "50%"
-        unit: "MiB"
+        flags: [ lvm ]
         state: present
+        part_start: 1GiB
+  
+    # - name: Clear Drive
+    #   register: clear_drive
+    #   filesystem:
+    #     dev: "{{ device }}" 
+    #     fstype: ext4
+    #     force: yes    
+    
+    # - debug:
+    #     msg: Cleat drive":" {{ clear_drive }}    
+ 
+    # - name: Boot Partition
+    #   register: boot_part
+    #   parted:
+    #     device: "{{ device }}" 
+    #     flags: [ esp ]
+    #     label: gpt
+    #     name: efi
+    #     number: 1
+    #     part_type: primary
+    #     part_end: "260MiB"
+    #     unit: MiB
+    #     state: present
 
-    - debug: 
-        msg: Root partition":" {{  root_part }}
+    # - debug:
+    #     msg: Boot partition":" {{ boot_part }}
+
+    # - name: Root Partition
+    #   register: root_part
+    #   parted:
+    #     device: "{{ device }}" 
+    #     flags: [ root ]
+    #     label: gpt
+    #     name: root
+    #     number: 2
+    #     part_type: logical
+    #     part_start: "260MiB"
+    #     part_end: "50%"
+    #     unit: "MiB"
+    #     state: present
+
+    # - debug: 
+    #     msg: Root partition":" {{  root_part }}
 
