@@ -4,30 +4,23 @@
     device: /dev/sda
   tasks:
 
-    # - name: Clear Drive
-    #   register: clear_drive
-    #   filesystem:
-    #     dev: "{{ device }}" 
-    #     fstype: fat32
-    #     force: yes    
-
     - name: Create a new primary partition with a size of 1GiB
       parted:
         device: /dev/sda
-        label: gpt
-        flags: [ esp ]
+        # label: gpt
+        # flags: [ esp ]
         number: 1
         state: present
-        part_end: 1GiB
+        part_end: 260MiB
 
     - name: Create a new primary partition for LVM
       parted:
         device: /dev/sda
-        label: gpt
+        # label: gpt
         number: 2
-        flags: [ root ]
+        # flags: [ root ]
         state: present
-        part_start: 1GiB
+        part_start: 260MiB
   
     # - name: Clear Drive
     #   register: clear_drive
