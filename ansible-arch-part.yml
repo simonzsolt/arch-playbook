@@ -1,6 +1,7 @@
 - hosts: localhost
   become: yes
-  device: /dev/sdb
+  vars: 
+    - device: /dev/sdb
   tasks:
   
     - name: Clear Drive
