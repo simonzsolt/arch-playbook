@@ -28,8 +28,8 @@
         number: 3
         label: gpt
         state: present
-        part_start: 1GiB
-        part_end: 2GiB
+        part_start: 10GiB
+        part_end: 12GiB
             
     - name: Create a new primary partition for fun
       parted:
@@ -37,8 +37,8 @@
         number: 4
         label: gpt
         state: present
-        part_start: 2GiB
-        part_end: 3GiB
+        part_start: 12GiB
+        part_end: 13GiB
       
     # - name: Clear Drive
     #   register: clear_drive
