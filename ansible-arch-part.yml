@@ -1,7 +1,16 @@
 - hosts: localhost
   become: yes
   tasks:
-    
+  
+    - name: Cear Drive
+      register: clear_drive
+      filesystem:
+        dev: /dev/sdb
+        fstype: ext4
+        
+    - debug:
+        msg: Cleat drive":" {{ clear_drive }}    
+ 
     - name: Boot Partition
       register: boot_part
       parted:
