@@ -4,7 +4,7 @@
     device: /dev/sda
   tasks:
 
-    - name: Create disposable
+    - name: Partition disk
       parted:
         device: /dev/sda
         number: 1
@@ -47,46 +47,22 @@
         state: present
         part_start: 104GiB
       
-    # - name: Clear Drive
-    #   register: clear_drive
-    #   filesystem:
-    #     dev: "{{ device }}" 
-    #     fstype: ext4
-    #     force: yes    
-    
-    # - debug:
-    #     msg: Cleat drive":" {{ clear_drive }}    
- 
-    # - name: Boot Partition
-    #   register: boot_part
-    #   parted:
-    #     device: "{{ device }}" 
-    #     flags: [ esp ]
-    #     label: gpt
-    #     name: efi
-    #     number: 1
-    #     part_type: primary
-    #     part_end: "260MiB"
-    #     unit: MiB
-    #     state: present
+    - name: Format boot
+      filesystem:
+        dev: /dev/sda1
+        fstype: vfat   
 
-    # - debug:
-    #     msg: Boot partition":" {{ boot_part }}
+    - name: Format root
+      filesystem:
+        dev: /dev/sda2
+        fstype: ext4
 
-    # - name: Root Partition
-    #   register: root_part
-    #   parted:
-    #     device: "{{ device }}" 
-    #     flags: [ root ]
-    #     label: gpt
-    #     name: root
-    #     number: 2
-    #     part_type: logical
-    #     part_start: "260MiB"
-    #     part_end: "50%"
-    #     unit: "MiB"
-    #     state: present
+    - name: Format swap
+      filesystem:
+        dev: /dev/sda3
+        fstype: swap
 
-    # - debug: 
-    #     msg: Root partition":" {{  root_part }}
-
+    - name: Format home
+      filesystem:
+        dev: /dev/sda4
+        fstype: ext4
