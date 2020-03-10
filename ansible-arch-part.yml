@@ -22,6 +22,7 @@
         label: gpt
         name: efi
         number: 1
+        part_type: primary
         part_end: "260MiB"
         unit: MiB
         state: present
@@ -36,6 +37,7 @@
         label: gpt
         name: root
         number: 2
+        part_type: logical
         part_start: "260MiB"
         part_end: "50%"
         unit: "MiB"
