@@ -7,6 +7,7 @@
     - name: Create a new primary partition
       parted:
         device: /dev/sda
+        label: gpt
         number: 1
         state: present
 
@@ -19,6 +20,7 @@
     - name: Create a new primary partition with a size of 1GiB
       parted:
         device: /dev/sda
+        label: gpt
         number: 1
         state: present
         part_end: 1GiB
@@ -26,6 +28,7 @@
     - name: Create a new primary partition for LVM
       parted:
         device: /dev/sda
+        label: gpt
         number: 2
         flags: [ lvm ]
         state: present
