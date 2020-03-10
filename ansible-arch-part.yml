@@ -4,23 +4,11 @@
     device: /dev/sda
   tasks:
 
-    - name: Create a new primary partition
-      parted:
-        device: /dev/sda
-        label: gpt
-        number: 1
-        state: present
-
-    - name: Remove partition number 1
-      parted:
-        device: /dev/sda
-        number: 1
-        state: absent
-
     - name: Create a new primary partition with a size of 1GiB
       parted:
         device: /dev/sda
         label: gpt
+        flags: [ esp ]
         number: 1
         state: present
         part_end: 1GiB
@@ -30,10 +18,9 @@
         device: /dev/sda
         label: gpt
         number: 2
-        flags: [ lvm ]
+        flags: [ root ]
         state: present
         part_start: 1GiB
-
   
     # - name: Clear Drive
     #   register: clear_drive
