@@ -7,7 +7,8 @@
       filesystem:
         dev: /dev/sdb
         fstype: ext4
-        
+        force: yes    
+    
     - debug:
         msg: Cleat drive":" {{ clear_drive }}    
  
