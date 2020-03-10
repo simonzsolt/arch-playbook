@@ -1,0 +1,53 @@
+- hosts: localhost
+  become: yes
+  tasks:
+
+  - name: Fomrat USB device to FAT32
+    register: format
+    filesystem:
+      force: yes
+      dev: /dev/sdb
+      fstype: vfat
+      opts: -I
+
+  - debug:
+      msg: Format":" {{ format }}
+
+  - name: Partition USB to be bootable
+    register: partition
+    parted:
+      device: /dev/sdb
+      number: 1
+      state: present
+
+#  - name: Create part 2
+ #   register: partition_2
+ #   parted:
+ #     device: /dev/sdb
+  #    number: 2
+   #   state: present
+    #  flags: boot
+
+ 
+  - debug: 
+      msg: Partition":" {{ partition.disk }}
+    
+ # - debug: 
+  #    msg: Partition 2":" {{ partition_2.disk }}
+
+#  - name: Format second partition
+    #register: format_second
+ #   filesystem:
+  #    dev: /dev/sdb1
+   #   fstype: vfat
+    #  opts: -I
+     
+ # - debug:
+  #    msg: Format second parition":" {{ foramt_second }} 
+  
+  - name: Copy imge to USB
+    register: dd_image
+    command: dd if=/home/jota/Downloads/endeavouros-2019.12.22-x86_64.iso of=/dev/sdb bs=4M oflag=sync status=progress
+
+  - debug: 
+      msg: DD":" {{ dd_image }}

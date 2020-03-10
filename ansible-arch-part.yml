@@ -1,0 +1,19 @@
+- hosts: localhost
+  become: yes
+  task:
+    
+    - name: Boot Partition
+      register: boot_part
+      parted:
+        device: /dev/sda
+        flag: esp
+        label: gpt
+        name: efi
+        number: 1
+        part_end: 260
+        unit: MiB
+        state: present
+
+    - debug:
+        msg: Boot partition":" {{ boot_part }}
+

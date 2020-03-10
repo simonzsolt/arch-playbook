@@ -1,0 +1,50 @@
+---
+- hosts: localhost
+  roles:
+    - kewlfft.aur
+  become: yes
+  tasks:
+
+  - name: Upgrade pacman
+    register: pacman_upgrade
+    pacman:
+      upgrade: yes
+      update-cache: yes
+      force: yes
+    
+  - debug:
+      msg: Pacman result {{ pacman_upgrade.msg }}
+
+  - name: Upgrade yay
+    register: yay_upgrade
+    aur:
+      use: yay
+      upgrade: yes
+
+  - debug:
+      msg: Yay result {{ pacman_upgrade.msg }}
+
+  - name: Get Local Postman Version
+    vars: 
+      postman_path: /opt/postman
+      package_path: /app/resources/app/package.json
+    shell: 
+      cmd: cat {{ postman_path }}{{ package_path }} | jq .version | sed 's/"//g'
+    register: postman_current_version
+
+  - debug:
+     msg: Postman local version":" {{ postman_current_version.stdout }}
+
+  - name: Get Upstream Postman Version
+    shell:
+      cmd: curl -sI https://dl.pstmn.io/download/latest/linux64 | awk 'match($0, /filename=(.*x64\-)(.*)(\.tar*)/, a) {print a[2]}'
+    register: postman_upstream_version
+
+  - debug:
+      msg: Postman upstream version":" {{ postman_upstream_version.stdout }}
+
+  - debug:
+      msg:  Postman is outdated
+   # when: {{ postman_current_version is version('2.0', operator='lt', strinct=True) }}
+    
+
