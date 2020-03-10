@@ -37,8 +37,8 @@
         number: 4
         label: gpt
         state: present
-        part_start: 2GiB
-        part_end: 3GiB
+        part_start: 10GiB
+        part_end: 15GiB
       
     # - name: Clear Drive
     #   register: clear_drive
