@@ -15,21 +15,19 @@
     - name: Create a new primary partition with a size of 1GiB
       parted:
         device: /dev/sda
-        # label: gpt
-        # flags: [ esp ]
         number: 1
         state: present
-        part_end: 260MiB
+        part_end: 1GiB
 
     - name: Create a new primary partition for LVM
       parted:
         device: /dev/sda
-        # label: gpt
         number: 2
-        # flags: [ root ]
+        flags: [ root ]
         state: present
-        part_start: 260MiB
-  
+        part_start: 1GiB
+
+      
     # - name: Clear Drive
     #   register: clear_drive
     #   filesystem:
