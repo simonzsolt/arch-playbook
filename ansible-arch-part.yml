@@ -34,6 +34,7 @@
       register: root_part
       parted:
         device: "{{ device }}" 
+        flags: [ root ]
         label: gpt
         name: root
         number: 2
