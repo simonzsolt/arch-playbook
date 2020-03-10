@@ -9,6 +9,7 @@
       filesystem:
         dev: "{{ device }}" 
         fstype: vfat
+        opts: -I
         force: yes    
 
     - name: Create a new primary partition with a size of 1GiB
