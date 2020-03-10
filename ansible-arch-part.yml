@@ -17,3 +17,17 @@
     - debug:
         msg: Boot partition":" {{ boot_part }}
 
+    - name: Root Partition
+      register: root_part
+      parted:
+        device: /dev/sda
+        name: root
+        number: 2
+        part_start: "260MiB"
+        part_end: "50%"
+        unit: "MiB"
+        state: present
+
+    - debug: 
+        msg: Root partition":" {{  root_part }}
+
