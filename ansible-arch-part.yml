@@ -5,7 +5,7 @@
     - name: Cear Drive
       register: clear_drive
       filesystem:
-        dev: /dev/sdb
+        dev: /dev/sda
         fstype: ext4
         force: yes    
     
