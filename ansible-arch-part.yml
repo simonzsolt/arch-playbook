@@ -1,11 +1,12 @@
 - hosts: localhost
   become: yes
+  device: /dev/sdb
   tasks:
   
-    - name: Cear Drive
+    - name: Clear Drive
       register: clear_drive
       filesystem:
-        dev: /dev/sda
+        dev: {{ device }} 
         fstype: ext4
         force: yes    
     
