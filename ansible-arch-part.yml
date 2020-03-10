@@ -4,26 +4,30 @@
     device: /dev/sda
   tasks:
 
-    - name: Clear Drive
-      register: clear_drive
-      filesystem:
-        dev: "{{ device }}" 
-        fstype: vfat
-        opts: -I
-        force: yes    
+   - name: Create a new primary partition
+      parted:
+        device: /dev/sdb
+        number: 1
+        state: present
+
+    - name: Remove partition number 1
+      parted:
+        device: /dev/sdb
+        number: 1
+        state: absent
 
     - name: Create a new primary partition with a size of 1GiB
       parted:
-        device: /dev/sda
+        device: /dev/sdb
         number: 1
         state: present
         part_end: 1GiB
 
     - name: Create a new primary partition for LVM
       parted:
-        device: /dev/sda
+        device: /dev/sdb
         number: 2
-        flags: [ root ]
+        flags: [ lvm ]
         state: present
         part_start: 1GiB
 
