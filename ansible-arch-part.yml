@@ -4,6 +4,13 @@
     device: /dev/sda
   tasks:
 
+    - name: Create disposable
+      parted:
+        device: /dev/sda
+        number: 1
+        label: gpt
+        state: present
+
     - name: Create a new primary partition for boot
       parted:
         device: /dev/sda
