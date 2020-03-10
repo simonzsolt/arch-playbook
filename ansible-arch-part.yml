@@ -7,7 +7,7 @@
     - name: Clear Drive
       register: clear_drive
       filesystem:
-        dev: {{ device }} 
+        dev: "{{ device }}" 
         fstype: ext4
         force: yes    
     
