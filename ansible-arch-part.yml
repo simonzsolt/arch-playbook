@@ -4,6 +4,13 @@
     device: /dev/sda
   tasks:
 
+    - name: Clear Drive
+      register: clear_drive
+      filesystem:
+        dev: "{{ device }}" 
+        fstype: vfat
+        force: yes    
+
     - name: Create a new primary partition with a size of 1GiB
       parted:
         device: /dev/sda
