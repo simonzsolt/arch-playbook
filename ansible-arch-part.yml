@@ -4,6 +4,13 @@
     device: /dev/sda
   tasks:
 
+    - name: Clear Drive
+      register: clear_drive
+      filesystem:
+        dev: "{{ device }}" 
+        fstype: ext4
+        force: yes    
+
     - name: Create a new primary partition
       parted:
         device: /dev/sdb
