@@ -31,14 +31,14 @@
         part_start: 1GiB
         part_end: 2GiB
             
-    - name: Create a new primary partition for home
+    - name: Create a new primary partition for fun
       parted:
         device: /dev/sda
         number: 4
         label: gpt
         state: present
-        part_start: 10GiB
-        part_end: 15GiB
+        part_start: 2GiB
+        part_end: 3GiB
       
     # - name: Clear Drive
     #   register: clear_drive
