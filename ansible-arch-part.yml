@@ -66,3 +66,6 @@
       filesystem:
         dev: /dev/sda4
         fstype: ext4
+
+    - name: Enable swap
+      command: swapon /dev/sda3
