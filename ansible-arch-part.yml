@@ -17,11 +17,11 @@
     - name: Boot Partition
       register: boot_part
       parted:
-        device: /dev/sda
+        device: "{{ device }}" 
         flags: esp
         label: gpt
         name: efi
-        number: 2
+        number: 1
         part_end: "260MiB"
         unit: MiB
         state: present
@@ -32,10 +32,10 @@
     - name: Root Partition
       register: root_part
       parted:
-        device: /dev/sda
+        device: "{{ device }}" 
         label: gpt
         name: root
-        number: 1
+        number: 2
         part_start: "260MiB"
         part_end: "50%"
         unit: "MiB"
