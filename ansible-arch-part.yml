@@ -1,16 +1,16 @@
 - hosts: localhost
   become: yes
-  task:
+  tasks:
     
     - name: Boot Partition
       register: boot_part
       parted:
         device: /dev/sda
-        flag: esp
+        flags: esp
         label: gpt
         name: efi
         number: 1
-        part_end: 260
+        part_end: "260MiB"
         unit: MiB
         state: present
 
