@@ -8,6 +8,7 @@
       parted:
         device: /dev/sda
         number: 1
+        label: gpt
         flags: [ esp ]
         state: present
         part_end: 260MiB
@@ -16,9 +17,20 @@
       parted:
         device: /dev/sda
         number: 2
+        label: gpt
         flags: [ root ]
         state: present
         part_start: 260MiB
+        part_end: 1GiB
+      
+    - name: Create a new primary partition for home
+      parted:
+        device: /dev/sda
+        number: 3
+        label: gpt
+        state: present
+        part_start: 1GiB
+        part_end: 2GiB
       
     # - name: Clear Drive
     #   register: clear_drive
