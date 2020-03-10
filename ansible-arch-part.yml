@@ -21,6 +21,7 @@
       register: root_part
       parted:
         device: /dev/sda
+        label: gpt
         name: root
         number: 2
         part_start: "260MiB"
