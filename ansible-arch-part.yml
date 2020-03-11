@@ -140,7 +140,8 @@
 
     - name: Set root password
       command: passwd
-      responses: '.*password.*': '{{ root_password }}'
+      responses: 
+        (?i)password: "{{ root_password }}"
 
     - name: Install bootloader
       command: "bootctl --path={{ boot_path }} install"
