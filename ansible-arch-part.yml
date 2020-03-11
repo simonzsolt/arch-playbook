@@ -11,7 +11,7 @@
     - name: Partition disk
       parted:
         device: device
-        number: {{ boot_number | int }}
+        number: "{{ boot_number | int }}"
         label: gpt
         state: present
 
