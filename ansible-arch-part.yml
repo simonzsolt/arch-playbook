@@ -110,13 +110,19 @@
       shell: "genfstab -U {{ root_path }} | tee -a {{ root_path }}/etc/fstab"
 
     - name: Create API filesystem proc
-      command: "mkdir {{ root_path }}/proc"
+      file:
+        state: mkdir
+        path: "{{ root_path }}/proc"
 
     - name: Create API filesystem sys
-      command: "mkdir {{ root_path }}/sys"
+      file:
+        state: mkdir
+        path: "{{ root_path }}/sys"
     
     - name: Create API filesystem dev
-      command: "mkdir {{ root_path }}/dev"
+      file:
+        state: mkdir
+        path: "{{ root_path }}/dev"
 
     - name: Change root
       command: "arch-chroot {{ root_path }}"
