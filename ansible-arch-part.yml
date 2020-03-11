@@ -6,7 +6,7 @@
     root_number: 2
     swap_number: 3
     home_number: 4
-    root_path: /mnt/root
+    root_path: /mnt
     boot_path: "{{ root_path }}/boot"
     home_path: "{{ root_path }}/home"
   tasks:
@@ -101,7 +101,7 @@
     - name: Install essential packages
       command: "pacstrap {{ root_path }} base linux linux-firmware"
 
-    - name: Create /mnt/root/etc
+    - name: Create /etc folder
       file: 
         state: directory
         path: "{{ root_path }}/etc"
