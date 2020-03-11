@@ -99,7 +99,7 @@
         state: mounted
 
     - name: Install essential packages
-      command: pacstrap /mnt base linux linux-firmware
+      command: "pacstrap {{ root_path }} base linux linux-firmware"
 
     - name: Create /mnt/root/etc
       file: 
