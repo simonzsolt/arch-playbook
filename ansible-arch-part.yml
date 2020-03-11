@@ -104,14 +104,21 @@
     - name: Create /mnt/etc
       command: mkdir /mnt/etc
       
-    - name: Touch fstab
+    - name: Generate fstab
       file:
         state: touch
         path: /mnt/etc/fstab
     
-    - name: Generate fstab
+    - name: Write boot to fstab
       shell: "genfstab -U {{ boot_path }} | tee -a /mnt/etc/fstab"
+      
+    - name: Write root to fstab
       shell: "genfstab -U {{ root_path }} | tee -a /mnt/etc/fstab"
+      
+    - name: Write swap to fstab
       shell: "genfstab -U {{ swap_path }} | tee -a /mnt/etc/fstab"
+      
+    - name: Write home to fstab
       shell: "genfstab -U {{ home_path }} | tee -a /mnt/etc/fstab"
+      
 
