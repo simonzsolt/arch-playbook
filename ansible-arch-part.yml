@@ -65,10 +65,11 @@
         dev: "{{ device }}{{ root_number }}"
         fstype: ext4
 
-    - name: Format swap
-      filesystem:
-        dev: "{{ device }}{{ swap_number }}"
-        fstype: swap
+    # skip for test
+    # - name: Format swap
+    #   filesystem:
+    #     dev: "{{ device }}{{ swap_number }}"
+    #     fstype: swap
 
     - name: Format home
       filesystem:
