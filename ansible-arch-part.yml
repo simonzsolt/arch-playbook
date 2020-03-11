@@ -98,6 +98,9 @@
         src: "{{ device }}{{ home_number }}"
         state: mounted
 
+    - name: Install essential packages
+      command: pacstrap /mnt base linux linux-firmware
+
     - name: Create /mnt/root/etc
       file: 
         state: directory
