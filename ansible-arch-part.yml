@@ -122,7 +122,12 @@
     - name: Create API filesystem dev
       file:
         state: directory
-        path: "{{ root_path }}/dev"
+        path: "{{ root_path }}/dev" 
+
+    - name: Create API filesystem run
+      file:
+        state: directory
+        path: "{{ root_path }}/run"
 
     - name: Change root
       command: "arch-chroot {{ root_path }}"
