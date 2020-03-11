@@ -101,43 +101,43 @@
     - name: Install essential packages
       command: "pacstrap {{ root_path }} base linux linux-firmware"
 
-    - name: Create /etc folder
-      file: 
-        state: directory
-        path: "{{ root_path }}/etc"
+    # - name: Create /etc folder
+    #   file: 
+    #     state: directory
+    #     path: "{{ root_path }}/etc"
       
-    - name: Generate fstab
-      file:
-        state: touch
-        path: "{{ root_path }}/etc/fstab"
+    # - name: Generate fstab
+    #   file:
+    #     state: touch
+    #     path: "{{ root_path }}/etc/fstab"
     
-    - name: Write root to fstab
-      shell: "genfstab -U {{ root_path }} | tee -a {{ root_path }}/etc/fstab"
+    # - name: Write root to fstab
+    #   shell: "genfstab -U {{ root_path }} | tee -a {{ root_path }}/etc/fstab"
 
-    - name: Create API filesystem proc
-      file:
-        state: directory
-        path: "{{ root_path }}/proc"
+    # - name: Create API filesystem proc
+    #   file:
+    #     state: directory
+    #     path: "{{ root_path }}/proc"
 
-    - name: Create API filesystem sys
-      file:
-        state: directory
-        path: "{{ root_path }}/sys"
+    # - name: Create API filesystem sys
+    #   file:
+    #     state: directory
+    #     path: "{{ root_path }}/sys"
     
-    - name: Create API filesystem dev
-      file:
-        state: directory
-        path: "{{ root_path }}/dev" 
+    # - name: Create API filesystem dev
+    #   file:
+    #     state: directory
+    #     path: "{{ root_path }}/dev" 
 
-    - name: Create API filesystem run
-      file:
-        state: directory
-        path: "{{ root_path }}/run"
+    # - name: Create API filesystem run
+    #   file:
+    #     state: directory
+    #     path: "{{ root_path }}/run"
 
-    - name: Create API filesystem tmp
-      file:
-        state: directory
-        path: "{{ root_path }}/tmp"
+    # - name: Create API filesystem tmp
+    #   file:
+    #     state: directory
+    #     path: "{{ root_path }}/tmp"
 
-    - name: Change root
-      command: "arch-chroot {{ root_path }}"
+    # - name: Change root
+    #   command: "arch-chroot {{ root_path }}"
