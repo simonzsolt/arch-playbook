@@ -7,7 +7,7 @@
     swap_number: 3
     home_number: 4
     root_path: /mnt
-    boot_path: "{{ root_path }}/boot/efi"
+    boot_path: "{{ root_path }}/boot"
     home_path: "{{ root_path }}/home"
     root_password: almakorte
   tasks:
