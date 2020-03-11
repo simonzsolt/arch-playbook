@@ -111,17 +111,17 @@
 
     - name: Create API filesystem proc
       file:
-        state: mkdir
+        state: directory
         path: "{{ root_path }}/proc"
 
     - name: Create API filesystem sys
       file:
-        state: mkdir
+        state: directory
         path: "{{ root_path }}/sys"
     
     - name: Create API filesystem dev
       file:
-        state: mkdir
+        state: directory
         path: "{{ root_path }}/dev"
 
     - name: Change root
