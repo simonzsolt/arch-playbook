@@ -77,7 +77,7 @@
 
     - name: Mount boot
       mount:
-        fstype: ext4
+        fstype: auto
         path: /mnt/boot
         src: "{{ device }}{{ boot_number }}"
         state: mounted
