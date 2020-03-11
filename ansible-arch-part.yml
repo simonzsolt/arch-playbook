@@ -53,23 +53,23 @@
       
     - name: Format boot
       filesystem:
-        dev: "{{device}}{{boot_number}}"
+        dev: "{{ device }}{{ boot_number }}"
         fstype: vfat   
 
     - name: Format root
       filesystem:
-        dev: "{{device}}{{root_number}}"
+        dev: "{{ device }}{{ root_number }}"
         fstype: ext4
 
     - name: Format swap
       filesystem:
-        dev: "{{device}}{{swap_number}}"
+        dev: "{{ device }}{{ swap_number }}"
         fstype: swap
 
     - name: Format home
       filesystem:
-        dev: "{{device}}{{home_number}}"
+        dev: "{{ device }}{{ home_number }}"
         fstype: ext4
 
     - name: Enable swap
-      command: "swapon {{ swap_number }}"
+      command: "swapon {{ device }}{{ swap_number }}"
