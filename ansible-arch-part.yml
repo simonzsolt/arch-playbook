@@ -129,5 +129,10 @@
         state: directory
         path: "{{ root_path }}/run"
 
+    - name: Create API filesystem tmp
+      file:
+        state: directory
+        path: "{{ root_path }}/tmp"
+
     - name: Change root
       command: "arch-chroot {{ root_path }}"
