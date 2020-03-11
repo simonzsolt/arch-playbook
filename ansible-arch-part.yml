@@ -7,8 +7,9 @@
     swap_number: 3
     home_number: 4
     root_path: /mnt
-    boot_path: "{{ root_path }}/boot"
+    boot_path: "{{ root_path }}/boot/efi"
     home_path: "{{ root_path }}/home"
+    root_password: almakorte
   tasks:
 
     - name: Partition disk
@@ -79,7 +80,8 @@
 
     - name: Mount boot
       mount:
-        fstype: auto
+        fstype: fat
+        opts: -F32
         path: "{{ boot_path }}"
         src: "{{ device }}{{ boot_number }}"
         state: mounted
@@ -103,3 +105,39 @@
 
     - name: Change root
       command: "arch-chroot {{ root_path }}"
+
+    - name: Set timezone
+      command: ln -sf /usr/share/zoneinfo/Europe/Budapest /etc/localtime
+
+    - name: Set clock
+      command: hwclock --systohc
+
+    - name: Add en_US locales
+      lineinfile:
+        path: /etc/locale.gen
+        regexp: "^#en_US.UTF-8 UTF-8"
+        line: "en_US.UTF-8 UTF-8"
+
+    - name: Add hu locales
+      lineinfile:
+        path: /etc/locale.gen
+        state: present
+        line: "hu_HU.UTF-8 UTF-8"
+
+    - name: Generate new locales
+      command: locale-gen
+
+    - name: Add matching entries to hosts 1
+      lineinfile:
+        path: /etc/hosts
+        state: present
+        line: "127.0.0.1  localhost"
+
+    - name: Add matching entries to hosts 2
+      lineinfile:
+        path: /etc/hosts
+        state: present
+        line: "::1   localhost"
+
+    - name: Set root password
+      command: password
