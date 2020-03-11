@@ -65,20 +65,18 @@
         dev: "{{ device }}{{ root_number }}"
         fstype: ext4
 
-    # skip for test
-    # - name: Format swap
-    #   filesystem:
-    #     dev: "{{ device }}{{ swap_number }}"
-    #     fstype: swap
+    - name: Format swap
+      filesystem:
+        dev: "{{ device }}{{ swap_number }}"
+        fstype: swap
 
     - name: Format home
       filesystem:
         dev: "{{ device }}{{ home_number }}"
         fstype: ext4
 
-    # skip for test
-    # - name: Enable swap
-    #   command: "swapon {{ device }}{{ swap_number }}"
+    - name: Enable swap
+      command: "swapon {{ device }}{{ swap_number }}"
 
     - name: Mount boot
       mount:
