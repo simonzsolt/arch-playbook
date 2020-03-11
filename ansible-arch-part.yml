@@ -71,5 +71,38 @@
         dev: "{{ device }}{{ home_number }}"
         fstype: ext4
 
-    - name: Enable swap
-      command: "swapon {{ device }}{{ swap_number }}"
+    # skip for testing
+    # - name: Enable swap
+    #   command: "swapon {{ device }}{{ swap_number }}"
+
+    - name: Mount boot
+      mount:
+        fstype: ext4
+        path: /mnt/boot
+        src: "{{ device }}{{ boot_number }}"
+        state: mounted
+
+    - name: Mount root
+      mount:
+        fstype: ext4
+        path: /mnt/root
+        src: "{{ device }}{{ root_number }}"
+        state: mounted
+
+    - name: Mount swap
+      mount:
+        fstype: swap
+        path: /mnt/swap
+        src: "{{ device }}{{ swap_number }}"
+        state: mounted
+
+    - name: Mount home
+      mount:
+        fstype: ext4
+        path: /mnt/home
+        src: "{{ device }}{{ home_number }}"
+        state: mounted
+
+    - name: Generate fstab
+      command:  genfstab -U /mnt >> /mnt/etc/fstab
+
