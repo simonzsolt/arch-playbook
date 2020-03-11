@@ -102,8 +102,10 @@
         state: mounted
 
     - name: Generate fstab
-      shell:  "genfstab -U {{ boot_path }} >> /mnt/etc/fstab"
-      shell:  "genfstab -U {{ root_path }} >> /mnt/etc/fstab"
-      shell:  "genfstab -U {{ swap_path }} >> /mnt/etc/fstab"
-      shell:  "genfstab -U {{ home_path }} >> /mnt/etc/fstab"
+      command: mkdir /mnt/etc
+      command: touch /mnt/etc/fstab
+      shell: "genfstab -U {{ boot_path }} | tee /mnt/etc/fstab"
+      shell: "genfstab -U {{ root_path }} | tee /mnt/etc/fstab"
+      shell: "genfstab -U {{ swap_path }} | tee /mnt/etc/fstab"
+      shell: "genfstab -U {{ home_path }} | tee /mnt/etc/fstab"
 
