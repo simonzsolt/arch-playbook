@@ -10,14 +10,14 @@
 
     - name: Partition disk
       parted:
-        device: device
+        device: "{{ device }}"
         number: "{{ boot_number | int }}"
         label: gpt
         state: present
 
     - name: Create a new primary partition for boot
       parted:
-        device: device
+        device: "{{ device }}"
         number: "{{ boot_number | int }}"
         label: gpt
         flags: [ esp ]
@@ -26,7 +26,7 @@
 
     - name: Create a new primary partition for root
       parted:
-        device: device
+        device: "{{ device }}"
         number: "{{ root_number | int }}"
         label: gpt
         state: present
@@ -35,7 +35,7 @@
       
     - name: Create a new primary partition for swap
       parted:
-        device: device
+        device: "{{ device }}"
         number: "{{ swap_number | int }}"
         label: gpt
         flags: [ swap ]
@@ -45,7 +45,7 @@
             
     - name: Create a new primary partition for home
       parted:
-        device: device
+        device: "{{ device }}"
         number: "{{ home_number | int}}"
         label: gpt
         state: present
