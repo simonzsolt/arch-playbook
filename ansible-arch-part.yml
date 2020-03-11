@@ -139,9 +139,10 @@
         line: "::1   localhost"
 
     - name: Set root password
-      command: passwd
-      responses: 
-        (?i)password: "{{ root_password }}"
+      expect:
+        command: passwd
+        responses: 
+          (?i)password: "{{ root_password }}"
 
     - name: Install bootloader
       command: "bootctl --path={{ boot_path }} install"
