@@ -71,7 +71,6 @@
         dev: "{{ device }}{{ home_number }}"
         fstype: ext4
 
-    skip for testing
     - name: Enable swap
       command: "swapon {{ device }}{{ swap_number }}"
 
