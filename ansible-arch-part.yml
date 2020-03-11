@@ -75,8 +75,9 @@
         dev: "{{ device }}{{ home_number }}"
         fstype: ext4
 
-    - name: Enable swap
-      command: "swapon {{ device }}{{ swap_number }}"
+    # skip for test
+    # - name: Enable swap
+    #   command: "swapon {{ device }}{{ swap_number }}"
 
     - name: Mount boot
       mount:
