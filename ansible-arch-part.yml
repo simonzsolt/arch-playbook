@@ -59,6 +59,7 @@
       filesystem:
         dev: "{{ device }}{{ boot_number }}"
         fstype: vfat
+        opts: -F32
 
     - name: Format root
       filesystem:
