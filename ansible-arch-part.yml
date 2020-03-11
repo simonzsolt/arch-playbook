@@ -103,6 +103,9 @@
     - name: Install essential packages
       command: "pacstrap {{ root_path }} base linux linux-firmware"
 
+    - name: Generate fstab
+      command: "genfstab -U /mnt tee -a {{ root_path }}/etc/fstab"
+
     - name: Change root
       command: "arch-chroot {{ root_path }} /bin/bash"
 
@@ -147,5 +150,5 @@
         name: root
         password: "{{ root_password }}"
 
-    # - name: Install bootloader
-    #   command: "bootctl --path={{ boot_path }} install"
+    - name: Install bootloader
+      command: "bootctl --path=/boot install"
