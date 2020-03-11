@@ -98,8 +98,8 @@
         src: "{{ device }}{{ home_number }}"
         state: mounted
 
-    - name: Create /mnt/etc
-      command: "mkdir {{ root_path }}/etc"
+    # - name: Create /mnt/etc
+    #   command: "mkdir {{ root_path }}/etc"
       
     - name: Generate fstab
       file:
@@ -107,17 +107,16 @@
         path: "{{ root_path }}/etc/fstab"
     
     - name: Write root to fstab
-      shell: "genfstab -U {{ root_path }} | tee -a {{ root_path }}/fstab"
+      shell: "genfstab -U {{ root_path }} | tee -a {{ root_path }}/etc/fstab"
 
-    # - name: Create API filesystem proc
-    #   command: "mkdir {{ root_path }}/proc"
+    - name: Create API filesystem proc
+      command: "mkdir {{ root_path }}/proc"
 
-    # - name: Create API filesystem sys
-    #   command: "mkdir {{ root_path }}/sys"
+    - name: Create API filesystem sys
+      command: "mkdir {{ root_path }}/sys"
     
-    # - name: Create API filesystem dev
-    #   command: "mkdir {{ root_path }}/dev"
+    - name: Create API filesystem dev
+      command: "mkdir {{ root_path }}/dev"
 
     - name: Change root
       command: "arch-chroot {{ root_path }}"
-      
