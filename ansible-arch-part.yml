@@ -58,7 +58,7 @@
     - name: Format boot
       filesystem:
         dev: "{{ device }}{{ boot_number }}"
-        fstype: vfat   
+        fstype: vfat
 
     - name: Format root
       filesystem:
@@ -80,8 +80,7 @@
 
     - name: Mount boot
       mount:
-        fstype: fat
-        opts: -F32
+        fstype: auto
         path: "{{ boot_path }}"
         src: "{{ device }}{{ boot_number }}"
         state: mounted
@@ -141,3 +140,6 @@
 
     - name: Set root password
       command: password
+
+    - name: Install bootloader
+      command: "bootctl --path={{ boot_path }} install"
