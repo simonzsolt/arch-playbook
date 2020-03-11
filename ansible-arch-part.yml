@@ -91,7 +91,7 @@
 
     - name: Mount swap
       mount:
-        fstype: swap
+        fstype: auto
         path: /mnt/swap
         src: "{{ device }}{{ swap_number }}"
         state: mounted
