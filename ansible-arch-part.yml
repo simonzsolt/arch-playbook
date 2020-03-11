@@ -101,9 +101,13 @@
         src: "{{ device }}{{ home_number }}"
         state: mounted
 
-    - name: Create fstab file
+    - name: Create /mnt/etc
       command: mkdir /mnt/etc
-      command: touch /mnt/etc/fstab
+      
+    - name: Touch fstab
+        filesystem:
+          stat: touch
+          path: /mnt/etc/fstab
     
     - name: Generate fstab
       shell: "genfstab -U {{ boot_path }} | tee /mnt/etc/fstab"
