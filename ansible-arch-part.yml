@@ -107,7 +107,7 @@
     - name: Touch fstab
       filesystem:
         stat: touch
-        path: /mnt/etc/fstab
+        src: /mnt/etc/fstab
     
     - name: Generate fstab
       shell: "genfstab -U {{ boot_path }} | tee /mnt/etc/fstab"
