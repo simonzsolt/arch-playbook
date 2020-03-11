@@ -18,7 +18,7 @@
     - name: Create a new primary partition for boot
       parted:
         device: device
-        number: boot_number
+        number: "{{ boot_number | int }}"
         label: gpt
         flags: [ esp ]
         state: present
@@ -27,7 +27,7 @@
     - name: Create a new primary partition for root
       parted:
         device: device
-        number: root_number
+        number: "{{ root_number | int }}"
         label: gpt
         state: present
         part_start: 260MiB
@@ -36,7 +36,7 @@
     - name: Create a new primary partition for swap
       parted:
         device: device
-        number: swap_number
+        number: "{{ swap_number | int }}"
         label: gpt
         flags: [ swap ]
         state: present
@@ -46,29 +46,29 @@
     - name: Create a new primary partition for home
       parted:
         device: device
-        number: home_number
+        number: "{{ home_number | int}}"
         label: gpt
         state: present
         part_start: 104GiB
       
     - name: Format boot
       filesystem:
-        dev: "{{device}} {{boot_number}}"
+        dev: "{{device}}{{boot_number}}"
         fstype: vfat   
 
     - name: Format root
       filesystem:
-        dev: "{{device}} {{root_number}}"
+        dev: "{{device}}{{root_number}}"
         fstype: ext4
 
     - name: Format swap
       filesystem:
-        dev: "{{device}} {{swap_number}}"
+        dev: "{{device}}{{swap_number}}"
         fstype: swap
 
     - name: Format home
       filesystem:
-        dev: "{{device}} {{home_number}}"
+        dev: "{{device}}{{home_number}}"
         fstype: ext4
 
     - name: Enable swap
