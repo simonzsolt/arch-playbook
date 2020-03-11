@@ -6,6 +6,10 @@
     root_number: 2
     swap_number: 3
     home_number: 4
+    boot_path: /mnt/boot
+    root_path: /mnt/root
+    swap_path: /mnt/swap
+    home_path: /mnt/home
   tasks:
 
     - name: Partition disk
@@ -77,24 +81,27 @@
     - name: Mount boot
       mount:
         fstype: auto
-        path: /mnt/boot
+        path: "{{ boot_path }}"
         src: "{{ device }}{{ boot_number }}"
         state: mounted
 
     - name: Mount root
       mount:
         fstype: ext4
-        path: /mnt/root
+        path: "{{ root_path }}"
         src: "{{ device }}{{ root_number }}"
         state: mounted
 
     - name: Mount home
       mount:
         fstype: ext4
-        path: /mnt/home
+        path: "{{ home_path }}"
         src: "{{ device }}{{ home_number }}"
         state: mounted
 
     - name: Generate fstab
-      command:  genfstab -U /mnt >> /mnt/etc/fstab
+      shell:  "genfstab -U {{ boot_path }} >> /mnt/etc/fstab"
+      shell:  "genfstab -U {{ root_path }} >> /mnt/etc/fstab"
+      shell:  "genfstab -U {{ swap_path }} >> /mnt/etc/fstab"
+      shell:  "genfstab -U {{ home_path }} >> /mnt/etc/fstab"
 
