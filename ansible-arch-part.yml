@@ -141,7 +141,7 @@
     - name: Set root password
       user:
         name: root
-        update_password: "{{ root_password }}"
+        password: "{{ root_password }}"
 
     - name: Install bootloader
       command: "bootctl --path={{ boot_path }} install"
