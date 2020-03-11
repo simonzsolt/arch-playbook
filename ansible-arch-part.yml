@@ -6,10 +6,9 @@
     root_number: 2
     swap_number: 3
     home_number: 4
-    boot_path: /mnt/boot
     root_path: /mnt/root
-    swap_path: /mnt/swap
-    home_path: /mnt/home
+    boot_path: "{{ root_path }}/boot"
+    home_path: "{{ root_path }}/home"
   tasks:
 
     - name: Partition disk
@@ -100,23 +99,12 @@
         state: mounted
 
     - name: Create /mnt/etc
-      command: mkdir /mnt/etc
+      command: "mkdir {{ root_path }}"
       
     - name: Generate fstab
       file:
         state: touch
-        path: /mnt/etc/fstab
+        path: "{{ root_path }}/fstab"
     
-    - name: Write boot to fstab
-      shell: "genfstab -U {{ boot_path }} | tee -a /mnt/etc/fstab"
-      
     - name: Write root to fstab
-      shell: "genfstab -U {{ root_path }} | tee -a /mnt/etc/fstab"
-      
-    - name: Write swap to fstab
-      shell: "genfstab -U {{ swap_path }} | tee -a /mnt/etc/fstab"
-      
-    - name: Write home to fstab
-      shell: "genfstab -U {{ home_path }} | tee -a /mnt/etc/fstab"
-      
-
+      shell: "genfstab -U {{ root_path }} | tee -a {{ root_path }}/fstab"
