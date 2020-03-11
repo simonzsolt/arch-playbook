@@ -103,7 +103,7 @@
       command: "pacstrap {{ root_path }} base linux linux-firmware"
 
     - name: Change root
-      command: "arch-chroot {{ root_path }}"
+      command: "arch-chroot {{ root_path }} /bin/bash"
 
     - name: Set timezone
       command: ln -sf /usr/share/zoneinfo/Europe/Budapest /etc/localtime
