@@ -9,7 +9,7 @@
     root_path: /mnt
     boot_path: "{{ root_path }}/boot"
     home_path: "{{ root_path }}/home"
-    root_password: almakorte
+    # root_password: almakorte
   tasks:
 
     - name: Partition disk
@@ -106,7 +106,10 @@
       command: "arch-chroot {{ root_path }} /bin/bash"
 
     - name: Set timezone
-      command: ln -sf /usr/share/zoneinfo/Europe/Budapest /etc/localtime
+      file:
+        state: link
+        src: /usr/share/zoneinfo/Europe/Budapest
+        path: /etc/localtime
 
     - name: Set clock
       command: hwclock --systohc
