@@ -98,8 +98,10 @@
         src: "{{ device }}{{ home_number }}"
         state: mounted
 
-    # - name: Create /mnt/etc
-    #   command: "mkdir {{ root_path }}/etc"
+    - name: Create /mnt/root/etc
+      file: 
+        state: directory
+        path: "{{ root_path }}/etc"
       
     - name: Generate fstab
       file:
