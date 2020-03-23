@@ -151,4 +151,4 @@
         password: "{{ root_password | password_hash('sha512', 'mysecretsalt') }}"
 
     - name: Install bootloader
-      command: "bootctl --path=/boot/efi install"
+      command: "bootctl --path=/boot install"
