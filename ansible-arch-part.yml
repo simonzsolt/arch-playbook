@@ -7,7 +7,7 @@
     swap_number: 3
     home_number: 4
     root_path: /mnt
-    boot_path: "{{ root_path }}/boot"
+    boot_path: "{{ root_path }}/boot/efi"
     home_path: "{{ root_path }}/home"
     # root_password: almakorte
   tasks:
@@ -151,4 +151,4 @@
         password: "{{ root_password | password_hash('sha512', 'mysecretsalt') }}"
 
     - name: Install bootloader
-      command: "bootctl --path=/boot install"
+      command: "bootctl --path=/boot/efi install"
