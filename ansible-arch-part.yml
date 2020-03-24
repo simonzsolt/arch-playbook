@@ -7,7 +7,7 @@
     swap_number: 3
     home_number: 4
     root_path: /mnt
-    boot_path: "{{ root_path }}/efi"
+    boot_path: "{{ root_path }}/boot"
     home_path: "{{ root_path }}/home"
     loader_entry: arch.conf
     # root_password: almakorte
@@ -112,6 +112,50 @@
         src: "{{ device }}{{ home_number }}"
         state: mounted
 
+    - name: Install bootloader
+      command: "bootctl --path={{ boot_path }} install"
+
+    # - name: Copy contents from /boot
+    #   copy:
+    #     src:  "{{ root_path }}/boot/"
+    #     dest: "{{ boot_path }}/"
+
+    - name: Delete default boot laoder
+      file:
+        path: "{{ boot_path }}/loader/loader.conf"
+        state: absent
+
+    - name: Create boot loader
+      file:
+        path: "{{ boot_path }}/loader/loader.conf"
+        state: touch
+
+    - name: Add loader config
+      blockinfile:
+        path: "{{ boot_path }}/loader/loader.conf"
+        block: |
+          default {{ loader_entry }}
+          timeout 5
+          console-mode max
+
+    - name: Create boot loader entry
+      file:
+        path: "{{ boot_path }}/loader/entries/{{ loader_entry }}"
+        state: touch
+
+    - name: Get root folder UUID
+      register: root_uuid
+      command: " lsblk -dno UUID {{ device }}{{ root_number }}"
+
+    - name: Add loader entry config
+      blockinfile:
+        path: "{{ boot_path }}/loader/entries/{{ loader_entry }}"
+        block: |
+          title   Arch Linux
+          linux   /vmlinuz-linux
+          initrd  /initramfs-linux.img
+          options root=UUID={{ root_uuid.stdout }} rw
+
     - name: Install essential packages
       command: "pacstrap {{ root_path }} base linux linux-firmware"
 
@@ -168,47 +212,3 @@
     #   user:
     #     name: root
     #     password: "{{ root_password | password_hash('sha512', 'mysecretsalt') }}"
-
-    - name: Install bootloader
-      command: "bootctl --path={{ boot_path }} install"
-
-    - name: Copy contents from /boot
-      copy:
-        src:  "{{ root_path }}/boot/"
-        dest: "{{ boot_path }}/"
-
-    - name: Delete default boot laoder
-      file:
-        path: "{{ boot_path }}/loader/loader.conf"
-        state: absent
-
-    - name: Create boot loader
-      file:
-        path: "{{ boot_path }}/loader/loader.conf"
-        state: touch
-
-    - name: Add loader config
-      blockinfile:
-        path: "{{ boot_path }}/loader/loader.conf"
-        block: |
-          default {{ loader_entry }}
-          timeout 5
-          console-mode max
-
-    - name: Create boot loader entry
-      file:
-        path: "{{ boot_path }}/loader/entries/{{ loader_entry }}"
-        state: touch
-
-    - name: Get root folder UUID
-      register: root_uuid
-      command: " lsblk -dno UUID {{ device }}{{ root_number }}"
-
-    - name: Add loader entry config
-      blockinfile:
-        path: "{{ boot_path }}/loader/entries/{{ loader_entry }}"
-        block: |
-          title   Arch Linux
-          linux   /vmlinuz-linux
-          initrd  /initramfs-linux.img
-          options root=UUID={{ root_uuid.stdout }} rw
