@@ -124,7 +124,7 @@
       command: lsblk
 
     - debug: 
-      msg: lsblk":" {{ lsblk_chroot }}
+        msg: lsblk":" {{ lsblk_chroot }}
  
     - name: Set timezone
       file:
