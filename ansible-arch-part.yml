@@ -162,8 +162,8 @@
     - name: Enable greeter
       file:
         state: link
-        src: "{{ root_path }}/usr/lib/systemd/system/lightdm.service"
-        path: /etc/systemd/system/display-manager.service
+        src: /usr/lib/systemd/system/lightdm.service
+        path: "{{ root_path }}/etc/systemd/system/display-manager.service"
 
     - name: Enable DE
       lineinfile:
