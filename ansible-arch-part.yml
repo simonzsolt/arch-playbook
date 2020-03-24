@@ -9,6 +9,7 @@
     root_path: /mnt
     boot_path: "{{ root_path }}/efi"
     home_path: "{{ root_path }}/home"
+    loader_entry: arch.conf
     # root_password: almakorte
   tasks:
 
@@ -117,56 +118,92 @@
     - name: Generate fstab
       command: "genfstab -U {{ root_path }} | tee -a {{ root_path }}/etc/fstab"
 
-    - name: Change root
-      command: "arch-chroot {{ root_path }} /bin/bash"
+    # - name: Change root
+    #   command: "arch-chroot {{ root_path }} /bin/bash"
 
-    - name: Test chroot
-      register: lsblk_chroot
-      command: lsblk
+    # - name: Test chroot
+    #   register: lsblk_chroot
+    #   command: lsblk
 
-    - debug: 
-        msg: lsblk":" {{ lsblk_chroot }}
+    # - debug: 
+    #     msg: lsblk":" {{ lsblk_chroot }}
  
-    - name: Set timezone
-      file:
-        state: link
-        src: /usr/share/zoneinfo/Europe/Budapest
-        path: /etc/localtime
+    # - name: Set timezone
+    #   file:
+    #     state: link
+    #     src: /usr/share/zoneinfo/Europe/Budapest
+    #     path: /etc/localtime
 
-    - name: Set clock
-      command: hwclock --systohc
+    # - name: Set clock
+    #   command: hwclock --systohc
 
-    - name: Add en_US locales
-      lineinfile:
-        path: /etc/locale.gen
-        regexp: "^#en_US.UTF-8 UTF-8"
-        line: "en_US.UTF-8 UTF-8"
+    # - name: Add en_US locales
+    #   lineinfile:
+    #     path: /etc/locale.gen
+    #     regexp: "^#en_US.UTF-8 UTF-8"
+    #     line: "en_US.UTF-8 UTF-8"
 
-    - name: Add hu locales
-      lineinfile:
-        path: /etc/locale.gen
-        state: present
-        line: "hu_HU.UTF-8 UTF-8"
+    # - name: Add hu locales
+    #   lineinfile:
+    #     path: /etc/locale.gen
+    #     state: present
+    #     line: "hu_HU.UTF-8 UTF-8"
 
-    - name: Generate new locales
-      command: locale-gen
+    # - name: Generate new locales
+    #   command: locale-gen
 
-    - name: Add matching entries to hosts 1
-      lineinfile:
-        path: /etc/hosts
-        state: present
-        line: "127.0.0.1  localhost"
+    # - name: Add matching entries to hosts 1
+    #   lineinfile:
+    #     path: /etc/hosts
+    #     state: present
+    #     line: "127.0.0.1  localhost"
 
-    - name: Add matching entries to hosts 2
-      lineinfile:
-        path: /etc/hosts
-        state: present
-        line: "::1   localhost"
+    # - name: Add matching entries to hosts 2
+    #   lineinfile:
+    #     path: /etc/hosts
+    #     state: present
+    #     line: "::1   localhost"
 
-    - name: Set root password
-      user:
-        name: root
-        password: "{{ root_password | password_hash('sha512', 'mysecretsalt') }}"
+    # - name: Set root password
+    #   user:
+    #     name: root
+    #     password: "{{ root_password | password_hash('sha512', 'mysecretsalt') }}"
 
     - name: Install bootloader
-      command: "bootctl --path=/efi install"
+      command: "bootctl --path={{ boot_path }} install"
+
+    - name: Delete default boot laoder
+      file:
+        path: "{{ boot_path }}/loader/loader.conf"
+        state: absent
+
+    - name: Create boot loader
+      file:
+        path: "{{ boot_path }}/loader/loader.conf"
+        state: touch
+
+    - name: Add loader config
+      blockinfile:
+        path: "{{ boot_path }}/loader/loader.conf"
+        block: |
+          default {{ loader_entry }}
+          timeout 5
+          console-mode max
+
+    - name: Create boot loader entry
+      file:
+        path: "{{ boot_path }}/loader/entries/{{ loader_entry }}"
+        state: touch
+
+    - name: Get root folder UUID
+      register: root_uuid
+      command: " lsblk -dno UUID {{ device }}{{ root_number }}"
+
+    - name: Add loader entry config
+      blockinfile:
+        path: "{{ boot_path }}/loader/entries/{{ loader_entry }}"
+        block: |
+          title   Arch Linux
+          linux   /boot/vmlinuz-linux
+          initrd  /boot/initramfs-linux.img
+          options root=UUID={{ root_uuid.stdout }} rw
