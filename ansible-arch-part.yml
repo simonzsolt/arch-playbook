@@ -159,8 +159,21 @@
     - name: Install essential packages
       command: "pacstrap {{ root_path }} base linux linux-firmware vim"
 
+    # - name: Generate fstab
+    #   command: "sudo genfstab -U {{ root_path }} | sudo tee -a {{ root_path }}/etc/fstab"
+
     - name: Generate fstab
-      command: "sudo genfstab -U {{ root_path }} | sudo tee -a {{ root_path }}/etc/fstab"
+      register: gen_fstab
+      command: genfstab -U {{ root_path }} 
+
+    - debug: 
+        msg: my fstab":" {{ gen_fstab }}
+
+    - name: Write to fstab
+      blockinfile:
+        path: "{{  root_path }}/etc/fstab"
+        block: |
+          {{ gen_fstab }}
 
     - name: Set timezone
       file:
