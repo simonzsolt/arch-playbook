@@ -190,8 +190,7 @@
     - name: Add matching entries to hosts 2
       blockinfile:
         path: "{{ root_path }}/etc/hosts"
-        state: present
-        line: |
+        block: |
           ::1 localhost
           127.0.0.1 localhost
   
