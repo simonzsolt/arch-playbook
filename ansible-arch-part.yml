@@ -151,7 +151,25 @@
           options root=UUID={{ root_uuid.stdout }} rw
 
     - name: Install essential packages
-      command: "pacstrap {{ root_path }} base linux linux-firmware vim"
+      command: "pacstrap {{ root_path }} base linux linux-firmware vim xfce4 xfce-goodies xorg-server lightdm lightdm-gtk-greeter"
+
+    - name: Configure greeter
+      lineinfile:
+        path: "{{ root_path }}/etc/lightdm/lightdm.conf"
+        regexp: "^#greeter-session=$"
+        line: "greeter-session=lightdm-gtk-greeter"
+
+    - name: Enable greeter
+      file:
+        state: link
+        src: "{{ root_path }}/usr/lib/systemd/system/lightdm.service"
+        path: "{{ root_path }}/etc/systemd/system/display-manager.service"
+
+    - name: Enable DE
+      lineinfile:
+        path: "{{ root_path }}/etc/X11/xinit/xinitrc"
+        state: present
+        line: exec startxfce4
 
     - name: Generate fstab
       register: gen_fstab
@@ -194,4 +212,3 @@
         block: |
           ::1 localhost
           127.0.0.1 localhost
-          
