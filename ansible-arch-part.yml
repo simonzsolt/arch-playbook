@@ -160,7 +160,7 @@
       command: "pacstrap {{ root_path }} base linux linux-firmware vim"
 
     - name: Generate fstab
-      command: "genfstab -U {{ root_path }} | sudo tee -a {{ root_path }}/etc/fstab"
+      command: "sudo genfstab -U {{ root_path }} | sudo tee -a {{ root_path }}/etc/fstab"
 
     - name: Set timezone
       file:
@@ -181,7 +181,7 @@
     - name: Add hu locales
       lineinfile:
         path: "{{ root_path }}/etc/locale.gen"
-        state: present
+        regexp: "^#hu_HU.UTF-8 UTF-8"
         line: "hu_HU.UTF-8 UTF-8"
 
     - name: Generate new locales
