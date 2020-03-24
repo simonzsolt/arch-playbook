@@ -12,6 +12,11 @@
     # root_password: almakorte
   tasks:
 
+    # - name: Delete existing partition table
+    #   parted:
+    #     device: "{{ device }}"
+    #     state: absent
+
     - name: Partition disk
       parted:
         device: "{{ device }}"
@@ -114,6 +119,13 @@
     - name: Change root
       command: "arch-chroot {{ root_path }} /bin/bash"
 
+    - name: Test chroot
+      register: lsblk_chroot
+      command: lsblk
+
+    - debug: 
+      msg: lsblk":" {{ lsblk_chroot }}
+ 
     - name: Set timezone
       file:
         state: link
