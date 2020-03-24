@@ -166,14 +166,11 @@
       register: gen_fstab
       command: genfstab -U {{ root_path }} 
 
-    - debug: 
-        msg: my fstab":" {{ gen_fstab }}
-
     - name: Write to fstab
       blockinfile:
         path: "{{  root_path }}/etc/fstab"
         block: |
-          {{ gen_fstab }}
+          {{ gen_fstab.stdout }}
 
     - name: Set timezone
       file:
