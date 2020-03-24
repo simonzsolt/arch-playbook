@@ -17,7 +17,7 @@
       filesystem:
         device: "{{ device }}"
         fstype: vfat
-        opts: -F32
+        opts: -I
 
     - name: Partition disk
       parted:
