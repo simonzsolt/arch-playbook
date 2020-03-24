@@ -10,7 +10,6 @@
     boot_path: "{{ root_path }}/boot"
     home_path: "{{ root_path }}/home"
     loader_entry: arch.conf
-    # root_password: almakorte
   tasks:
 
     - name: Format disk
@@ -115,11 +114,6 @@
     - name: Install bootloader
       command: "bootctl --path={{ boot_path }} install"
 
-    # - name: Copy contents from /boot
-    #   copy:
-    #     src:  "{{ root_path }}/boot/"
-    #     dest: "{{ boot_path }}/"
-
     - name: Delete default boot laoder
       file:
         path: "{{ boot_path }}/loader/loader.conf"
@@ -200,8 +194,4 @@
         block: |
           ::1 localhost
           127.0.0.1 localhost
-  
-    # - name: Set root password
-    #   user:
-    #     name: root
-    #     password: "{{ root_password | password_hash('sha512', 'mysecretsalt') }}"
+          
