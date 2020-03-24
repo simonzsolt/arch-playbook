@@ -157,7 +157,7 @@
           options root=UUID={{ root_uuid.stdout }} rw
 
     - name: Install essential packages
-      command: "pacstrap {{ root_path }} base linux linux-firmware"
+      command: "pacstrap {{ root_path }} base linux linux-firmware vim"
 
     - name: Generate fstab
       command: "genfstab -U {{ root_path }} | sudo tee -a {{ root_path }}/etc/fstab"
@@ -194,7 +194,7 @@
         line: |
           ::1 localhost
           127.0.0.1 localhost
-
+  
     # - name: Set root password
     #   user:
     #     name: root
