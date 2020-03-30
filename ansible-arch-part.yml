@@ -11,6 +11,7 @@
     home_path: "{{ root_path }}/home"
     loader_entry: arch.conf
     key_path: ./vault/key
+    luks_container_name: cryptlvm
   tasks:
 
     - name: Format disk
@@ -18,7 +19,7 @@
         device: "{{ device }}"
         fstype: vfat
         opts: -I
-        force: yes
+        force: yes  
 
       # cryptsetup open --type plain -d /dev/urandom /dev/<block-device> to_be_wiped
     - name: Secure erasure of the hard disk drive
@@ -53,23 +54,41 @@
     #     label: gpt
     #     state: present
 
-    # - name: Create a new primary partition for boot
-    #   parted:
-    #     device: "{{ device }}"
-    #     number: "{{ boot_number | int }}"
-    #     label: gpt
-    #     flags: [ esp ]
-    #     state: present
-    #     part_end: 260MiB
+    - name: Create a new primary partition for boot
+      parted:
+        device: "{{ device }}"
+        number: "{{ boot_number | int }}"
+        label: gpt
+        flags: [ esp ]
+        state: present
+        part_end: 260MiB
 
-    # - name: Create a new primary partition for root
-    #   parted:
-    #     device: "{{ device }}"
-    #     number: "{{ root_number | int }}"
-    #     label: gpt
-    #     state: present
-    #     part_start: 260MiB
-    #     part_end: 23GiB
+    - name: Create a partition which will later contain the encrypted container
+      parted:
+        device: "{{ device }}"
+        number: 2
+        label: gpt
+        state: present
+        part_start: 260MiB
+        part_end: 25GiB
+
+    - name: Create the LUKS encrypted container at the "system" partition
+      register: luks_container
+      luks_device:
+        device: "{{ device }}/2"
+        keyfile: "{{ key_path }}"
+        state: opened
+        name: {{ luks_container_name }}
+
+    - debug:
+        msg: Container {{ luks_container }}
+
+    # pvcreate /dev/mapper/cryptlvm
+    - name: Create a physical volume on top of the opened LUKS container
+      lvol:
+        pvs: /dev/mapper/{{ luks_container_name }}
+        vg: pv
+
       
     # - name: Create a new primary partition for swap
     #   parted:
