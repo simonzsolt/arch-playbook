@@ -21,28 +21,28 @@
 
       # cryptsetup open --type plain -d /dev/urandom /dev/<block-device> to_be_wiped
     - name: Secure erasure of the hard disk drive
+      register: temporary_container
       luks_device:
-        register: temporary_container
         device: "{{ device }}"
-        key_file: "{{ key_path }}"
+        keyfile: "{{ key_path }}"
         state: opened
         name: to_be_wiped
 
     - debug:
         msg: Container {{ temporary_container }}
 
-    - name: Wipe the container with zeros
-      register: wipe_disk
-      command: dd if=/dev/zero of=/dev/mapper/to_be_wiped status=progress bs=200M
+    # skip for testing
+    # - name: Wipe the container with zeros
+    #   register: wipe_disk
+    #   command: dd if=/dev/zero of=/dev/mapper/to_be_wiped status=progress bs=200M
 
-    - debug:
-        msg: Wipe {{ wipe_disk }}
+    # - debug:
+    #     msg: Wipe {{ wipe_disk }}
 
     - name: Close temporary container
       luks_device:
-        register: temporary_container
         device: "{{ device }}"
-        key_file: "{{ key_path }}"
+        keyfile: "{{ key_path }}"
         state: closed
 
     # - name: Partition disk
