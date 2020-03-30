@@ -18,6 +18,7 @@
         device: "{{ device }}"
         fstype: vfat
         opts: -I
+        force: yes
 
       # cryptsetup open --type plain -d /dev/urandom /dev/<block-device> to_be_wiped
     - name: Secure erasure of the hard disk drive
