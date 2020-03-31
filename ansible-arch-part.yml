@@ -12,6 +12,8 @@
     loader_entry: arch.conf
     key_path: ./vault/key
     luks_container_name: cryptlvm
+    physical_volume_group: "/dev/mapper/{{ luks_container_name }}"
+    lvm_volume_group: MyVolGroup
   tasks:
 
     - name: Format disk
@@ -61,7 +63,7 @@
         label: gpt
         flags: [ esp ]
         state: present
-        part_end: 260MiB
+        part_end: 260MB
 
     - name: Create a partition which will later contain the encrypted container
       parted:
@@ -69,8 +71,8 @@
         number: 2
         label: gpt
         state: present
-        part_start: 260MiB
-        part_end: 25GiB
+        part_start: 260MB
+        part_end: 25GB
 
     - name: Create the LUKS encrypted container at the "system" partition
       register: luks_container
@@ -83,179 +85,177 @@
     - debug:
         msg: Container {{ luks_container }}
 
-    # pvcreate /dev/mapper/cryptlvm
-    - name: Create a physical volume on top of the opened LUKS container
+    - name: Create the volume group named MyVolGroup and create a physical volume on top of the opened LUKS container
       lvg:
-        vg: MyVolGroup
-        pvs: /dev/mapper/cryptlvm
+        vg: "{{ lvm_volume_group }}"
+        pvs: "{{ physical_volume_group }}"
 
-    # - name: Create a new primary partition for swap
-    #   parted:
-    #     device: "{{ device }}"
-    #     number: "{{ swap_number | int }}"
-    #     label: gpt
-    #     flags: [ swap ]
-    #     state: present
-    #     part_start: 23GiB
-    #     part_end: 24GiB
-            
-    # - name: Create a new primary partition for home
-    #   parted:
-    #     device: "{{ device }}"
-    #     number: "{{ home_number | int}}"
-    #     label: gpt
-    #     state: present
-    #     part_start: 24GiB
-    #     part_end: 25GiB
+    - name: Create a logical for swap
+      lvol:
+        vg: "{{ lvm_volume_group }}"
+        lv: sawp
+        size: 1G
+
+    - name: Create a logical for root
+      lvol:
+        vg: "{{ lvm_volume_group }}"
+        lv: root
+        size: 23G
+
+    - name: Create a logical for swap
+      lvol:
+        vg: "{{ lvm_volume_group }}"
+        lv: sawp
+        size: +100%FREE
+    
+    - name: Format filesystem on root
+      filesystem:
+        device: "/dev/{{ lvm_volume_group }}/root"
+        fstype: ext4
+    
+    - name: Format filesystem on home
+      filesystem:
+        device: "/dev/{{ lvm_volume_group }}/home"
+        fstype: ext4
+    
+    - name: Format filesystem on swap
+      filesystem:
+        device: "/dev/{{ lvm_volume_group }}/swap"
+        fstype: swap
       
-    # - name: Format boot
-    #   filesystem:
-    #     dev: "{{ device }}{{ boot_number }}"
-    #     fstype: vfat
-    #     opts: -F32
+    - name: Format boot
+      filesystem:
+        dev: "{{ device }}{{ boot_number }}"
+        fstype: vfat
+        opts: -F32
 
-    # - name: Format root
-    #   filesystem:
-    #     dev: "{{ device }}{{ root_number }}"
-    #     fstype: ext4
+    - name: Enable swap
+      command: "swapon {{ device }}{{ swap_number }}"
 
-    # - name: Format swap
-    #   filesystem:
-    #     dev: "{{ device }}{{ swap_number }}"
-    #     fstype: swap
+    - name: Mount root
+      mount:
+        fstype: ext4
+        path: "{{ root_path }}"
+        src: "{{ device }}{{ root_number }}"
+        state: mounted
 
-    # - name: Format home
-    #   filesystem:
-    #     dev: "{{ device }}{{ home_number }}"
-    #     fstype: ext4
+    - name: Create /efi folder
+      file:
+        path: "{{ boot_path }}"
+        state: directory
 
-    # - name: Enable swap
-    #   command: "swapon {{ device }}{{ swap_number }}"
+    - name: Mount boot
+      mount:
+        fstype: auto
+        path: "{{ boot_path }}"
+        src: "{{ device }}{{ boot_number }}"
+        state: mounted
 
-    # - name: Mount root
-    #   mount:
-    #     fstype: ext4
-    #     path: "{{ root_path }}"
-    #     src: "{{ device }}{{ root_number }}"
-    #     state: mounted
+    - name: Mount home
+      mount:
+        fstype: ext4
+        path: "{{ home_path }}"
+        src: "{{ device }}{{ home_number }}"
+        state: mounted
 
-    # - name: Create /efi folder
-    #   file:
-    #     path: "{{ boot_path }}"
-    #     state: directory
+    - name: Install bootloader
+      command: "bootctl --path={{ boot_path }} install"
 
-    # - name: Mount boot
-    #   mount:
-    #     fstype: auto
-    #     path: "{{ boot_path }}"
-    #     src: "{{ device }}{{ boot_number }}"
-    #     state: mounted
+    - name: Delete default boot laoder
+      file:
+        path: "{{ boot_path }}/loader/loader.conf"
+        state: absent
 
-    # - name: Mount home
-    #   mount:
-    #     fstype: ext4
-    #     path: "{{ home_path }}"
-    #     src: "{{ device }}{{ home_number }}"
-    #     state: mounted
+    - name: Create boot loader
+      file:
+        path: "{{ boot_path }}/loader/loader.conf"
+        state: touch
 
-    # - name: Install bootloader
-    #   command: "bootctl --path={{ boot_path }} install"
+    - name: Add loader config
+      blockinfile:
+        path: "{{ boot_path }}/loader/loader.conf"
+        block: |
+          default {{ loader_entry }}
+          timeout 5
+          console-mode max
 
-    # - name: Delete default boot laoder
-    #   file:
-    #     path: "{{ boot_path }}/loader/loader.conf"
-    #     state: absent
+    - name: Create boot loader entry
+      file:
+        path: "{{ boot_path }}/loader/entries/{{ loader_entry }}"
+        state: touch
 
-    # - name: Create boot loader
-    #   file:
-    #     path: "{{ boot_path }}/loader/loader.conf"
-    #     state: touch
+    - name: Get root folder UUID
+      register: root_uuid
+      command: " lsblk -dno UUID {{ device }}{{ root_number }}"
 
-    # - name: Add loader config
-    #   blockinfile:
-    #     path: "{{ boot_path }}/loader/loader.conf"
-    #     block: |
-    #       default {{ loader_entry }}
-    #       timeout 5
-    #       console-mode max
+    - name: Add loader entry config
+      blockinfile:
+        path: "{{ boot_path }}/loader/entries/{{ loader_entry }}"
+        block: |
+          title   Arch Linux
+          linux   /vmlinuz-linux
+          initrd  /initramfs-linux.img
+          options root=UUID={{ root_uuid.stdout }} rw
 
-    # - name: Create boot loader entry
-    #   file:
-    #     path: "{{ boot_path }}/loader/entries/{{ loader_entry }}"
-    #     state: touch
+    - name: Install essential packages
+      command: "pacstrap {{ root_path }} base linux linux-firmware vim xfce4 xfce4-goodies xorg-server lightdm lightdm-gtk-greeter"
 
-    # - name: Get root folder UUID
-    #   register: root_uuid
-    #   command: " lsblk -dno UUID {{ device }}{{ root_number }}"
+    - name: Configure greeter
+      lineinfile:
+        path: "{{ root_path }}/etc/lightdm/lightdm.conf"
+        regexp: "^#greeter-session=$"
+        line: "greeter-session=lightdm-gtk-greeter"
 
-    # - name: Add loader entry config
-    #   blockinfile:
-    #     path: "{{ boot_path }}/loader/entries/{{ loader_entry }}"
-    #     block: |
-    #       title   Arch Linux
-    #       linux   /vmlinuz-linux
-    #       initrd  /initramfs-linux.img
-    #       options root=UUID={{ root_uuid.stdout }} rw
+    - name: Enable greeter
+      file:
+        state: link
+        src: /usr/lib/systemd/system/lightdm.service
+        path: "{{ root_path }}/etc/systemd/system/display-manager.service"
 
-    # - name: Install essential packages
-    #   command: "pacstrap {{ root_path }} base linux linux-firmware vim xfce4 xfce4-goodies xorg-server lightdm lightdm-gtk-greeter"
+    - name: Enable DE
+      lineinfile:
+        path: "{{ root_path }}/etc/X11/xinit/xinitrc"
+        state: present
+        line: exec startxfce4
 
-    # - name: Configure greeter
-    #   lineinfile:
-    #     path: "{{ root_path }}/etc/lightdm/lightdm.conf"
-    #     regexp: "^#greeter-session=$"
-    #     line: "greeter-session=lightdm-gtk-greeter"
+    - name: Generate fstab
+      register: gen_fstab
+      command: genfstab -U {{ root_path }} 
 
-    # - name: Enable greeter
-    #   file:
-    #     state: link
-    #     src: /usr/lib/systemd/system/lightdm.service
-    #     path: "{{ root_path }}/etc/systemd/system/display-manager.service"
+    - name: Write to fstab
+      blockinfile:
+        path: "{{  root_path }}/etc/fstab"
+        block: |
+          {{ gen_fstab.stdout }}
 
-    # - name: Enable DE
-    #   lineinfile:
-    #     path: "{{ root_path }}/etc/X11/xinit/xinitrc"
-    #     state: present
-    #     line: exec startxfce4
-
-    # - name: Generate fstab
-    #   register: gen_fstab
-    #   command: genfstab -U {{ root_path }} 
-
-    # - name: Write to fstab
-    #   blockinfile:
-    #     path: "{{  root_path }}/etc/fstab"
-    #     block: |
-    #       {{ gen_fstab.stdout }}
-
-    # - name: Set timezone
-    #   file:
-    #     state: link
-    #     src: "{{ root_path }}/usr/share/zoneinfo/Europe/Budapest"
-    #     path: "{{ root_path }}/etc/localtime"
+    - name: Set timezone
+      file:
+        state: link
+        src: "{{ root_path }}/usr/share/zoneinfo/Europe/Budapest"
+        path: "{{ root_path }}/etc/localtime"
 
 
-    # - name: Set clock
-    #   command: "arch-chroot {{ root_path }} hwclock --systohc"
+    - name: Set clock
+      command: "arch-chroot {{ root_path }} hwclock --systohc"
 
-    # - name: Add en_US locales
-    #   lineinfile:
-    #     path: "{{ root_path }}/etc/locale.gen"
-    #     regexp: "^#en_US.UTF-8 UTF-8"
-    #     line: "en_US.UTF-8 UTF-8"
+    - name: Add en_US locales
+      lineinfile:
+        path: "{{ root_path }}/etc/locale.gen"
+        regexp: "^#en_US.UTF-8 UTF-8"
+        line: "en_US.UTF-8 UTF-8"
 
-    # - name: Add hu locales
-    #   lineinfile:
-    #     path: "{{ root_path }}/etc/locale.gen"
-    #     regexp: "^#hu_HU.UTF-8 UTF-8"
-    #     line: "hu_HU.UTF-8 UTF-8"
+    - name: Add hu locales
+      lineinfile:
+        path: "{{ root_path }}/etc/locale.gen"
+        regexp: "^#hu_HU.UTF-8 UTF-8"
+        line: "hu_HU.UTF-8 UTF-8"
 
-    # - name: Generate new locales
-    #   command: "arch-chroot {{ root_path }} locale-gen"
+    - name: Generate new locales
+      command: "arch-chroot {{ root_path }} locale-gen"
 
-    # - name: Add matching entries to hosts 2
-    #   blockinfile:
-    #     path: "{{ root_path }}/etc/hosts"
-    #     block: |
-    #       ::1 localhost
-    #       127.0.0.1 localhost
+    - name: Add matching entries to hosts 2
+      blockinfile:
+        path: "{{ root_path }}/etc/hosts"
+        block: |
+          ::1 localhost
+          127.0.0.1 localhost
