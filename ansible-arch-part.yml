@@ -75,7 +75,7 @@
     - name: Create the LUKS encrypted container at the "system" partition
       register: luks_container
       luks_device:
-        device: "{{ device }}/2"
+        device: "{{ device }}2"
         keyfile: "{{ key_path }}"
         state: opened
         name: "{{ luks_container_name }}"
