@@ -78,7 +78,7 @@
         device: "{{ device }}/2"
         keyfile: "{{ key_path }}"
         state: opened
-        name: {{ luks_container_name }}
+        name: "{{ luks_container_name }}"
 
     - debug:
         msg: Container {{ luks_container }}
@@ -87,7 +87,7 @@
     - name: Create a physical volume on top of the opened LUKS container
       lvol:
         pvs: /dev/mapper/{{ luks_container_name }}
-    
+
     # - name: Create a new primary partition for swap
     #   parted:
     #     device: "{{ device }}"
