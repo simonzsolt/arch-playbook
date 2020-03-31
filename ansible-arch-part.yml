@@ -87,6 +87,7 @@
     - name: Create a physical volume on top of the opened LUKS container
       lvol:
         pvs: /dev/mapper/{{ luks_container_name }}
+        vg: physical
 
     # - name: Create a new primary partition for swap
     #   parted:
