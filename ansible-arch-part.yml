@@ -89,6 +89,7 @@
       lvg:
         vg: "{{ lvm_volume_group }}"
         pvs: "{{ physical_volume_group }}"
+        pesize: 25G
 
     - name: Create a logical for swap
       lvol:
