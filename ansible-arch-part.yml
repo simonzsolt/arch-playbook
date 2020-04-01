@@ -99,10 +99,10 @@
         lv: root
         size: 23G
 
-    - name: Create a logical for swap
+    - name: Create a logical for home
       lvol:
         vg: "{{ lvm_volume_group }}"
-        lv: swap
+        lv: home
         size: +100%FREE
     
     - name: Format filesystem on root
