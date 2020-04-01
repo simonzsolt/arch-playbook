@@ -107,17 +107,17 @@
     
     - name: Format filesystem on root
       filesystem:
-        device: "/dev/{{ lvm_volume_group }}-root"
+        device: "/dev/mapper/{{ lvm_volume_group }}-root"
         fstype: ext4
     
     - name: Format filesystem on home
       filesystem:
-        device: "/dev/{{ lvm_volume_group }}-home"
+        device: "/dev/mapper/{{ lvm_volume_group }}-home"
         fstype: ext4
     
     - name: Format filesystem on swap
       filesystem:
-        device: "/dev/{{ lvm_volume_group }}-swap"
+        device: "/dev/mapper/{{ lvm_volume_group }}-swap"
         fstype: swap
       
     - name: Format boot
@@ -127,13 +127,13 @@
         opts: -F32
 
     - name: Enable swap
-      command: "swapon /dev/{{ lvm_volume_group }}-swap"
+      command: "swapon /dev/mapper/{{ lvm_volume_group }}-swap"
 
     - name: Mount root
       mount:
         fstype: ext4
         path: "{{ root_path }}"
-        src: "/dev/{{ lvm_volume_group }}-root"
+        src: "/dev/mapper/{{ lvm_volume_group }}-root"
         state: mounted
 
     - name: Create /efi folder
@@ -152,7 +152,7 @@
       mount:
         fstype: ext4
         path: "{{ home_path }}"
-        src: "/dev/{{ lvm_volume_group }}-home"
+        src: "/dev/mapper/{{ lvm_volume_group }}-home"
         state: mounted
 
     - name: Install bootloader
