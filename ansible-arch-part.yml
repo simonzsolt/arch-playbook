@@ -127,13 +127,13 @@
         opts: -F32
 
     - name: Enable swap
-      command: "swapon {{ device }}{{ swap_number }}"
+      command: "swapon /dev/{{ lvm_volume_group }}/swap"
 
     - name: Mount root
       mount:
         fstype: ext4
         path: "{{ root_path }}"
-        src: "{{ device }}{{ root_number }}"
+        src: "/dev/{{ lvm_volume_group }}/root"
         state: mounted
 
     - name: Create /efi folder
@@ -152,7 +152,7 @@
       mount:
         fstype: ext4
         path: "{{ home_path }}"
-        src: "{{ device }}{{ home_number }}"
+        src: "/dev/{{ lvm_volume_group }}/home"
         state: mounted
 
     - name: Install bootloader
