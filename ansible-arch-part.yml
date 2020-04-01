@@ -183,7 +183,7 @@
 
     - name: Get root folder UUID
       register: root_uuid
-      command: " lsblk -dno UUID {{ device }}{{ root_number }}"
+      command: "lsblk -dno UUID {{ device }}{{ root_number }}"
 
     - name: Add loader entry config
       blockinfile:
@@ -192,10 +192,31 @@
           title   Arch Linux
           linux   /vmlinuz-linux
           initrd  /initramfs-linux.img
-          options root=UUID={{ root_uuid.stdout }} rw
+          "options cryptdevice=UUID={{ root_uuid.stdout }}:{{ luks_container_name }} root=/dev/mapper/{{ lvm_volume_group }}-root"
 
     - name: Install essential packages
-      command: "pacstrap {{ root_path }} base linux linux-firmware vim xfce4 xfce4-goodies xorg-server lightdm lightdm-gtk-greeter"
+      command: "pacstrap {{ root_path }} base linux linux-firmware lvm2 vim xfce4 xfce4-goodies xorg-server lightdm lightdm-gtk-greeter"
+
+    - name: Configure mkinitcpio hooks
+      lineinfile:
+        path: "{{ root_path }}/etc/mkinitcpio.conf"
+        regexp: "^HOOKS=.*\)$"
+        line: "HOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)"
+
+    - name: Regenerate initramfs
+      register: regenerate_initramfs
+      command: "arch-chroot {{ root_path }} mkinitcpio -p linux"
+
+    - debug:
+        msg: mkinitcpio":" {{ regenerate_initramfs }}
+
+    - name: Configure vconsole fonts
+      blockinfile:
+        path: "{{ root_path }}/etc/vconsole.conf"
+        create: yes
+        block: |
+          KEYMAP=us
+          FONT=lat2-16
 
     - name: Configure greeter
       lineinfile:
