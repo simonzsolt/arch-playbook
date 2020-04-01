@@ -90,7 +90,7 @@
         vg: "{{ lvm_volume_group }}"
         pvs: "{{ physical_volume_group }}"
         pesize: 25G
-        pv_optin: --setphysicalvolumesize 25G
+        pv_options: --setphysicalvolumesize 25G
 
     - name: Create a logical for swap
       lvol:
