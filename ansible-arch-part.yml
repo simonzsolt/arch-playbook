@@ -72,7 +72,7 @@
         label: gpt
         state: present
         part_start: 260MB
-        part_end: 25GB
+        part_end: 30GB
 
     - name: Create the LUKS encrypted container at the "system" partition
       register: luks_container
