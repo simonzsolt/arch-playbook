@@ -82,15 +82,10 @@
         state: opened
         name: "{{ luks_container_name }}"
 
-    - debug:
-        msg: Container {{ luks_container }}
-
     - name: Create the volume group named MyVolGroup and create a physical volume on top of the opened LUKS container
       lvg:
         vg: "{{ lvm_volume_group }}"
         pvs: "{{ physical_volume_group }}"
-        pesize: 25G
-        pv_options: --setphysicalvolumesize 25G
 
     - name: Create a logical for swap
       lvol:
