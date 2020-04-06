@@ -195,7 +195,7 @@
           "options cryptdevice=UUID={{ root_uuid.stdout }}:{{ luks_container_name }} root=/dev/mapper/{{ lvm_volume_group }}-root"
 
     - name: Install essential packages
-      command: "pacstrap {{ root_path }} base linux linux-firmware lvm2 vim xfce4 xfce4-goodies xorg-server lightdm lightdm-gtk-greeter"
+      command: "pacstrap {{ root_path }} base linux linux-firmware lvm2 vim xfce4 xfce4-goodies xorg-server lightdm lightdm-gtk-greeter terminus-font"
 
     - name: Configure mkinitcpio hooks
       lineinfile:
@@ -216,7 +216,7 @@
         create: yes
         block: |
           KEYMAP=us
-          FONT=lat2-16
+          FONT=ter-p24n
 
     - name: Configure greeter
       lineinfile:
