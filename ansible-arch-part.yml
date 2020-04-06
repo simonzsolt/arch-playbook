@@ -200,7 +200,7 @@
     - name: Configure mkinitcpio hooks
       lineinfile:
         path: "{{ root_path }}/etc/mkinitcpio.conf"
-        regexp: "^HOOKS=.\\*\)$"
+        regexp: "^HOOKS=.*\\)$"
         line: "HOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)"
 
     - name: Regenerate initramfs
