@@ -198,11 +198,18 @@
           initrd  /initramfs-linux.img
           # "options cryptdevice=UUID={{ root_uuid.stdout }}:{{ luks_container_name }} root=/dev/mapper/{{ lvm_volume_group }}-root rw"
           # Use UUID for encrypted root volume
-          "options cryptdevice=UUID={{ root_uuid.stdout }}:{{ luks_container_name }} root={{ root_vol_uuid.stdout }} rw"
+          "options cryptdevice=UUID={{ root_uuid.stdout }}:{{ luks_container_name }} root={{ root_vol_uuid.stdout }} rw debug"
 
     # skip for testing
     # - name: Install essential packages
     #   command: "pacstrap {{ root_path }} base linux linux-firmware lvm2 vim xfce4 xfce4-goodies xorg-server lightdm lightdm-gtk-greeter terminus-font"
+
+    # use with low bandwith network
+    - name: Copy pacstrap setup from external storage
+      synchronize:
+        src: /media/*
+        dest: /dev/mapper/{{ lvm_volume_group }}-root/
+        dirs: yes
 
     - name: Configure mkinitcpio hooks
       lineinfile:
