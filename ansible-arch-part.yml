@@ -181,9 +181,13 @@
         path: "{{ boot_path }}/loader/entries/{{ loader_entry }}"
         state: touch
 
-    - name: Get root folder UUID
+    - name: Get root device UUID
       register: root_uuid
       command: "lsblk -dno UUID {{ device }}{{ root_number }}"
+
+    - name: Get root volume UUID
+      register: root_vol_uuid
+      command: "lsblk -dno UUID /dev/mapper/{{ lvm_volume_group }}-root"
 
     - name: Add loader entry config
       blockinfile:
@@ -192,10 +196,13 @@
           title   Arch Linux
           linux   /vmlinuz-linux
           initrd  /initramfs-linux.img
-          "options cryptdevice=UUID={{ root_uuid.stdout }}:{{ luks_container_name }} root=/dev/mapper/{{ lvm_volume_group }}-root"
+          # "options cryptdevice=UUID={{ root_uuid.stdout }}:{{ luks_container_name }} root=/dev/mapper/{{ lvm_volume_group }}-root rw"
+          # Use UUID for encrypted root volume
+          "options cryptdevice=UUID={{ root_uuid.stdout }}:{{ luks_container_name }} root={{ root_vol_uuid.stdout }} rw"
 
-    - name: Install essential packages
-      command: "pacstrap {{ root_path }} base linux linux-firmware lvm2 vim xfce4 xfce4-goodies xorg-server lightdm lightdm-gtk-greeter terminus-font"
+    # skip for testing
+    # - name: Install essential packages
+    #   command: "pacstrap {{ root_path }} base linux linux-firmware lvm2 vim xfce4 xfce4-goodies xorg-server lightdm lightdm-gtk-greeter terminus-font"
 
     - name: Configure mkinitcpio hooks
       lineinfile:
@@ -271,7 +278,7 @@
     - name: Generate new locales
       command: "arch-chroot {{ root_path }} locale-gen"
 
-    - name: Add matching entries to hosts 2
+    - name: Add matching entries to hosts
       blockinfile:
         path: "{{ root_path }}/etc/hosts"
         block: |
